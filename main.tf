@@ -16,6 +16,10 @@ module "vnet" {
   eu_rg_loc  = azurerm_resource_group.proj1_westeuro.location
 }
 
+module "keyvault" {
+  source = "./modules/keyvault"
+}
+
 module "vms" {
   source        = "./modules/compute"
   us_subnet1_id = module.vnet.us_subnet1_id
@@ -25,4 +29,5 @@ module "vms" {
   eu_rg_name    = azurerm_resource_group.proj1_westeuro.name
   eu_rg_loc     = azurerm_resource_group.proj1_westeuro.location
   student_id    = var.student_id
+  client_vm_pwd = module.keyvault.client_vm_pwd
 }
