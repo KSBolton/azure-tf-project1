@@ -8,9 +8,7 @@ resource "random_id" "kv_name" {
   prefix = "kv"
 }
 
-data "azurerm_client_config" "my_az_config" {
-  
-}
+data "azurerm_client_config" "my_az_config" {}
 
 resource "azurerm_key_vault" "proj1_kv" {
   depends_on = [
@@ -29,6 +27,17 @@ resource "azurerm_key_vault" "proj1_kv" {
   access_policy {
     tenant_id = data.azurerm_client_config.my_az_config.tenant_id
     object_id = data.azurerm_client_config.my_az_config.object_id
+
+    key_permissions = ["get",]
+
+    secret_permissions = ["get", "backup", "delete", "list", "purge", "recover", "restore", "set",]
+
+    storage_permissions = ["get",]
+  }
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.my_az_config.tenant_id
+    object_id = local.odl_object_id
 
     key_permissions = ["get",]
 
