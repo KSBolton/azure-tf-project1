@@ -1,0 +1,12 @@
+#!/bin/bash
+sudo apt-get update
+sudo apt-get install -y apache2
+sudo systemctl start apache2
+sudo systemctl enable apache2
+cat <<EOF > /var/www/html/index.html
+<html>
+<h1>Welcome to Kamaal's server on ${host}.</h1>
+<h1><font color="red"> Region: ${region}.</font></h1>
+<h2>Built by Terraform!</h2>
+</html>
+EOF
