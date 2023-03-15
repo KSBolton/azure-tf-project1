@@ -4,8 +4,10 @@ variable "eu_rg_name" {}
 variable "eu_rg_loc" {}
 variable "us_subnet1_id" {}
 variable "eu_subnet1_id" {}
-variable "student_id" {}
+variable "prefix" {}
 variable "client_vm_pwd" {}
+variable "lnx_vm_config" {}
+variable "client_vm_config" {}
 
 variable "vm_names" {
   type    = set(string)
