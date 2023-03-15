@@ -1,16 +1,7 @@
-resource "tls_private_key" "vm_key" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
 resource "azurerm_ssh_public_key" "vm_pub_key" {
-  for_each = var.vm_names
-  name = "${each.key}_vm_pub_key"
-  location              = startswith(each.key, "r1") ? var.us_rg_loc : startswith(each.key, "r2") ? var.eu_rg_loc : ""
-  resource_group_name   = startswith(each.key, "r1") ? var.us_rg_name : startswith(each.key, "r2") ? var.eu_rg_name : ""
-  public_key = tls_private_key.vm_key.public_key_openssh
-
-  provisioner "local-exec" {
-    command = "echo '${tls_private_key.vm_key.private_key_pem}' > aws_keys_pairs.pem"
-  }
+  count               = 2
+  name                = count.index == 0 ? "lnx_us_vm_pub_key" : count.index == 1 ? "lnx_eu_vm_pub_key" : ""
+  location            = count.index == 0 ? var.us_rg_loc : count.index == 1 ? var.eu_rg_loc : ""
+  resource_group_name = count.index == 0 ? var.us_rg_name : count.index == 1 ? var.eu_rg_name : ""
+  public_key          = file("./key-clo800.pub")
 }
