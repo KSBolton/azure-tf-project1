@@ -1,10 +1,14 @@
 resource "azurerm_linux_virtual_machine" "lnx_vms" {
   for_each              = var.vm_names
-  name                  = "${var.student_id}-${each.key}"
+  name                  = "${var.prefix}-${each.key}"
   location              = startswith(each.key, "r1") ? var.us_rg_loc : startswith(each.key, "r2") ? var.eu_rg_loc : ""
   resource_group_name   = startswith(each.key, "r1") ? var.us_rg_name : startswith(each.key, "r2") ? var.eu_rg_name : ""
   network_interface_ids = [azurerm_network_interface.vm_nics[each.key].id]
   size                  = "Standard_B2s"
+  availability_set_id = startswith(each.key, "r1") ? azurerm_availability_set.lnx_vm_avset[0].id : startswith(each.key, "r2") ? azurerm_availability_set.lnx_vm_avset[1].id : ""
+  custom_data = base64encode(templatefile(".\\server_setup.tftpl",
+    { host = "${var.prefix}-${each.key}",
+  region = startswith(each.key, "r1") ? var.us_rg_loc : startswith(each.key, "r2") ? var.eu_rg_loc : "" }))
 
   os_disk {
     name                 = "${each.key}-os-disk"
@@ -13,19 +17,19 @@ resource "azurerm_linux_virtual_machine" "lnx_vms" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts-gen2"
-    version   = "latest"
+    publisher = lookup(var.lnx_vm_config, "publisher")
+    offer     = lookup(var.lnx_vm_config, "offer")
+    sku       = lookup(var.lnx_vm_config, "sku")
+    version   = lookup(var.lnx_vm_config, "version")
   }
 
-  computer_name                   = "${var.student_id}-${each.key}"
+  computer_name                   = "${var.prefix}-${each.key}"
   admin_username                  = "kbolton3"
   disable_password_authentication = true
 
   admin_ssh_key {
     username   = "kbolton3"
-    public_key = tls_private_key.vm_key.public_key_openssh
+    public_key = file(".\\key-clo800.pub")
   }
 }
 
@@ -46,9 +50,9 @@ resource "azurerm_windows_virtual_machine" "client_vms" {
   }
 
   source_image_reference {
-    publisher = "MicrosoftWindowsDesktop"
-    offer     = "windows-11"
-    sku       = "win11-22h2-pro"
-    version   = "latest"
+    publisher = lookup(var.client_vm_config, "publisher")
+    offer     = lookup(var.client_vm_config, "offer")
+    sku       = lookup(var.client_vm_config, "sku")
+    version   = lookup(var.client_vm_config, "version")
   }
 }
