@@ -1,3 +1,3 @@
-output "private_key_openssh" {
-  value = tls_private_key.vm_key.private_key_openssh
+output "lnx_vm_nics" {
+  value = azurerm_network_interface.vm_nics
 }
