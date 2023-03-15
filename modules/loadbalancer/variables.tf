@@ -7,8 +7,8 @@ variable "eu_subnet1_id" {}
 variable "lnx_vm_nics" {}
 
 variable "lb_names" {
-  type = set(string)
-  default = [ "r1_us_lb1", "r2_eu_lb1" ]
+  type    = set(string)
+  default = ["r1_us_lb1", "r2_eu_lb1"]
 }
 
 variable "r1_lb_name" {

@@ -5,7 +5,7 @@ resource "azurerm_linux_virtual_machine" "lnx_vms" {
   resource_group_name   = startswith(each.key, "r1") ? var.us_rg_name : startswith(each.key, "r2") ? var.eu_rg_name : ""
   network_interface_ids = [azurerm_network_interface.vm_nics[each.key].id]
   size                  = "Standard_B2s"
-  availability_set_id = startswith(each.key, "r1") ? azurerm_availability_set.lnx_vm_avset[0].id : startswith(each.key, "r2") ? azurerm_availability_set.lnx_vm_avset[1].id : ""
+  availability_set_id   = startswith(each.key, "r1") ? azurerm_availability_set.lnx_vm_avset[0].id : startswith(each.key, "r2") ? azurerm_availability_set.lnx_vm_avset[1].id : ""
   custom_data = base64encode(templatefile(".\\server_setup.tftpl",
     { host = "${var.prefix}-${each.key}",
   region = startswith(each.key, "r1") ? var.us_rg_loc : startswith(each.key, "r2") ? var.eu_rg_loc : "" }))
