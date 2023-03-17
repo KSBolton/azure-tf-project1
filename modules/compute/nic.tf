@@ -8,7 +8,6 @@ resource "azurerm_network_interface" "vm_nics" {
     name                          = "internal"
     subnet_id                     = startswith(each.value, "r1") ? var.us_subnet1_id : startswith(each.value, "r2") ? var.eu_subnet1_id : ""
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.lnx_vms_ip[each.value].id
   }
 }
 
@@ -24,15 +23,6 @@ resource "azurerm_network_interface" "client_nics" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.client_ip[each.value].id
   }
-}
-
-resource "azurerm_public_ip" "lnx_vms_ip" {
-  for_each            = var.vm_names
-  name                = "${each.value}-pub-ip"
-  location            = startswith(each.value, "r1") ? var.us_rg_loc : startswith(each.value, "r2") ? var.eu_rg_loc : ""
-  resource_group_name = startswith(each.value, "r1") ? var.us_rg_name : startswith(each.value, "r2") ? var.eu_rg_name : ""
-  allocation_method   = "Dynamic"
-  sku                 = "Basic"
 }
 
 resource "azurerm_public_ip" "client_ip" {
