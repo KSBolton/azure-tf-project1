@@ -29,7 +29,7 @@ resource "azurerm_linux_virtual_machine" "lnx_vms" {
 
   admin_ssh_key {
     username   = "kbolton3"
-    public_key = file(".\\key-clo800.pub")
+    public_key = startswith(each.key, "r1") ? azurerm_ssh_public_key.vm_pub_key[0].public_key : azurerm_ssh_public_key.vm_pub_key[1].public_key
   }
 }
 
